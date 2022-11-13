@@ -9,6 +9,7 @@ const database = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
+//// Pour vérifier la connexion à la base de données :
 // database
 //   .getConnection()
 //   .then(() => {
