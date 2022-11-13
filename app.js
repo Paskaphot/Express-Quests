@@ -24,10 +24,12 @@ const movieHandlers = require("./movieHandlers");
 app.get("/api/movies", movieHandlers.getMovies);
 // route 3 GET Detail
 app.get("/api/movies/:id", movieHandlers.getMovieById);
-// route 4 POST new item detail
+// route 4 POST New item detail
 app.post("/api/movies", movieHandlers.postMovie);
-// route 5 PUT change detail
+// route 5 PUT Change detail
 app.put("/api/movies/:id", movieHandlers.updateMovie);
+// route 6 DELETE Detail
+app.delete("/api/movies/:id", movieHandlers.deleteMovie);
 
 ///* routes USER challenge : */
 const userHandlers = require("./userHandlers");
@@ -39,6 +41,9 @@ app.get("/api/users/:id", userHandlers.getUserById);
 app.post("/api/users", userHandlers.postUser);
 // route 5 PUT change detail
 app.put("/api/users/:id", userHandlers.updateUser);
+//route 6 DELETE Detail
+app.delete("/api/users/:id", userHandlers.deleteUser);
+
 
 //---------- fin ROUTES ----------------//
 
