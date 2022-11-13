@@ -26,6 +26,8 @@ app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
 // route 4 POST new item detail
 app.post("/api/movies", movieHandlers.postMovie);
+// route 5 PUT change detail
+app.put("/api/movies/:id", movieHandlers.updateMovie);
 
 ///* routes USER challenge : */
 const userHandlers = require("./userHandlers");
@@ -35,6 +37,8 @@ app.get("/api/users", userHandlers.getUsers);
 app.get("/api/users/:id", userHandlers.getUserById);
 // route 4bis POST new detail
 app.post("/api/users", userHandlers.postUser);
+// route 5 PUT change detail
+app.put("/api/users/:id", userHandlers.updateUser);
 
 //---------- fin ROUTES ----------------//
 
