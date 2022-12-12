@@ -1,40 +1,42 @@
 const database = require("./database");
 
-// function GET list
- const getMovies = (req, res) => {
-
-  let sql = "select * from movies";
-  const sqlValues = []
+const getMovies = (req, res) => {
+  const initialSql = "select * from movies";
+  const where = [];
 
   if (req.query.color != null) {
-    sql += " where color = ?"; // equivalent sql = sql + " where color = ?"
-    sqlValues.push(req.query.color);
-
-    if (req.query.max_duration != null) {
-      sql += " and duration <= ?"; // equivalent sql = sql + " and duration <= ?";
-      sqlValues.push(req.query.max_duration);
-    } 
-
-  } else if (req.query.max_duration != null) {
-    sql += " where duration <= ?"; // equivalent sql = sql + " where duration <= ?";
-    sqlValues.push(req.query.max_duration);
-  };
+    where.push({
+      column: "color",
+      value: req.query.color,
+      operator: "=",
+    });
+  }
+  if (req.query.max_duration != null) {
+    where.push({
+      column: "duration",
+      value: req.query.max_duration,
+      operator: "<=",
+    });
+  }
 
   database
-    .query(sql, sqlValues)
-  
+    .query(
+      where.reduce(
+        (sql, { column, operator }, index) =>
+          `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`,
+        initialSql
+      ),
+      where.map(({ value }) => value)
+    )
     .then(([movies]) => {
-      console.log(movies);
       res.json(movies);
     })
-
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error retrieving data");
+      res.status(500).send("Error retrieving data from database");
     });
 };
 
-// function GET detail
 const getMovieById = (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -44,16 +46,15 @@ const getMovieById = (req, res) => {
       if (movies[0] != null) {
         res.json(movies[0]);
       } else {
-        res.status(404).send("Movie not found !");
+        res.status(404).send("Not Found");
       }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error retrieving data");
+      res.status(500).send("Error retrieving data from database");
     });
 };
 
-// function POST new detail
 const postMovie = (req, res) => {
   const { title, director, year, color, duration } = req.body;
 
@@ -67,34 +68,32 @@ const postMovie = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error saving new movie");
+      res.status(500).send("Error saving the movie");
     });
 };
 
-// function PUT change detail
 const updateMovie = (req, res) => {
   const id = parseInt(req.params.id);
   const { title, director, year, color, duration } = req.body;
 
-  database 
+  database
     .query(
       "update movies set title = ?, director = ?, year = ?, color = ?, duration = ? where id = ?",
       [title, director, year, color, duration, id]
     )
     .then(([result]) => {
       if (result.affectedRows === 0) {
-        res.status(404).send("Not found !");
+        res.status(404).send("Not Found");
       } else {
         res.sendStatus(204);
       }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error updating movie");
+      res.status(500).send("Error editing the movie");
     });
 };
 
-// function DELETE detail
 const deleteMovie = (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -102,22 +101,21 @@ const deleteMovie = (req, res) => {
     .query("delete from movies where id = ?", [id])
     .then(([result]) => {
       if (result.affectedRows === 0) {
-        res.status(404).send("Not found at all !");
+        res.status(404).send("Not Found");
       } else {
         res.sendStatus(204);
       }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error deleting movie ");
+      res.status(500).send("Error deleting the movie");
     });
 };
 
-// Exports all functions to app.js
 module.exports = {
   getMovies,
   getMovieById,
   postMovie,
   updateMovie,
-  deleteMovie
+  deleteMovie,
 };
